@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Cliente</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5" style="max-width: 500px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white py-3">
+            <h4 class="mb-0 fw-bold"><i class="bi bi-pencil-square me-2"></i> Modificar Datos del Cliente</h4>
+        </div>
+        <div th:if="${errorDniDuplicado}" class="alert alert-danger d-flex align-items-center gap-2 shadow-sm mb-4" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span th:text="${errorDniDuplicado}"></span>
+
+            <div th:if="${errorClienteDuplicado}" class="alert alert-danger d-flex align-items-center gap-2 shadow-sm mb-4" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span th:text="${errorClienteDuplicado}"></span>
+            </div>
+        </div>
+        <div class="card-body p-4">
+
+            <div th:if="${errorClienteDuplicado}" class="alert alert-danger d-flex align-items-center gap-2 shadow-sm mb-3" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span th:text="${errorClienteDuplicado}" class="fw-medium"></span>
+            </div>
+
+
+            <form th:action="@{/clientes/actualizar}" th:object="${cliente}" method="post">
+                <input type="hidden" th:field="*{id}">
+
+                <div class="mb-3">
+                    <label for="nombre" class="form-label small fw-bold text-secondary">Nombre</label>
+                    <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="apellido" class="form-label small fw-bold text-secondary">Apellido</label>
+                    <input type="text" class="form-control" id="apellido" th:field="*{apellido}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="dni" class="form-label small fw-bold text-secondary">DNI</label>
+                    <input type="text" class="form-control" id="dni" th:field="*{dni}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="telefono" class="form-label small fw-bold text-secondary">Teléfono</label>
+                    <input type="text" class="form-control" id="telefono" th:field="*{telefono}" placeholder="Ej: 600000000">
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="/clientes" class="btn btn-secondary btn-sm fw-medium">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-sm fw-bold">
+                        <i class="bi bi-save me-1"></i> Guardar Cambios
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

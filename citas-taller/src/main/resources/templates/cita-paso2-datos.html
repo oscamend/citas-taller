@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Paso 2: Datos de la Cita</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container mt-5" style="max-width: 600px;">
+
+    <div th:if="${error}" class="alert alert-danger shadow-sm fw-bold mb-3" th:text="${error}"></div>
+
+    <div class="card shadow border-0">
+        <div class="card-header bg-success text-white py-3">
+            <h4 class="mb-0 fw-bold"><i class="bi bi-calendar2-check-fill me-2"></i> Agendar Cita - Paso 2: Detalles</h4>
+        </div>
+        <div class="card-body p-4">
+
+            <div class="alert alert-info py-2 shadow-sm border-0">
+                <i class="bi bi-person-check-fill me-1"></i> <strong>Cliente asignado:</strong> <span th:text="${cliente.nombre} + ' ' + ${cliente.apellido}"></span> <br>
+                <i class="bi bi-card-text me-1"></i> <strong>DNI:</strong> <span th:text="${cliente.dni}"></span>
+            </div>
+
+            <form th:action="@{/citas/guardar}" method="post" class="mt-4">
+
+                <input type="hidden" name="clienteId" th:value="${cliente.id}">
+
+                <div class="mb-3">
+                    <label for="matricula" class="form-label small fw-bold text-secondary">Matrícula del Vehículo</label>
+                    <input type="text" class="form-control" id="matricula" name="matricula" th:value="${cita.matricula}" required placeholder="Ej: 1234ABC">
+                </div>
+
+                <div class="mb-3">
+                    <label for="marca" class="form-label small fw-bold text-secondary">Marca / Modelo</label>
+                    <input type="text" class="form-control" id="marca" name="marca" th:value="${cita.marca}" required placeholder="Ej: Seat Ibiza">
+                </div>
+
+                <div class="mb-3">
+                    <label for="tipoService" class="form-label small fw-bold text-secondary">Tipo de Servicio</label>
+                    <select id="tipoService" name="tipoService" class="form-select" required>
+                        <option value="" disabled th:selected="${cita.tipoService == null}">Selecciona una opción...</option>
+                        <option value="Revisión" th:selected="${cita.tipoService == 'Revisión'}">Revisión General</option>
+                        <option value="Mecánica" th:selected="${cita.tipoService == 'Mecánica'}">Fallo de Mecánica</option>
+                        <option value="Chapa y Pintura" th:selected="${cita.tipoService == 'Chapa y Pintura'}">Chapa y Pintura</option>
+                        <option value="Electricidad" th:selected="${cita.tipoService == 'Electricidad'}">Sistema Eléctrico</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="mecanicoId" class="form-label small fw-bold text-secondary">Asignar Mecánico</label>
+                    <select class="form-select" id="mecanicoId" name="mecanicoId" required>
+                        <option value="" disabled th:selected="${cita.mecanico == null}">-- Selecciona un mecánico --</option>
+                        <option th:each="mec : ${mecanicos}"
+                                th:value="${mec.id}"
+                                th:text="${mec.nombre != null ? mec.nombre + ' ' + mec.apellido : 'Operario sin nombre'}"
+                                th:selected="${cita.mecanico != null && mec.id == cita.mecanico.id}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="fechaHora" class="form-label small fw-bold text-secondary">Fecha y Hora de la Cita</label>
+                    <input type="datetime-local" class="form-control" id="fechaHora" name="fechaHora" th:value="${cita.fechaHora}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="descripcionAveria" class="form-label small fw-bold text-secondary">Descripción de la Avería</label>
+                    <textarea class="form-control" id="descripcionAveria" name="descripcionAveria" rows="2" placeholder="Describe brevemente el problema..." required th:text="${cita.descripcionAveria}"></textarea>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a th:href="@{/citas/nuevo-cliente}" class="btn btn-secondary fw-semibold">
+                        <i class="bi bi-arrow-left"></i> Atrás
+                    </a>
+                    <button type="submit" class="btn btn-success fw-bold shadow-sm">
+                        <i class="bi bi-check-circle-fill me-1"></i> Confirmar y Agendar Cita
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
