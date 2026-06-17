@@ -26,21 +26,26 @@
         </button>
 
         <div class="collapse navbar-collapse" id="menuPrincipal">
-            <div class="navbar-nav ms-auto gap-2">
-                <a sec:authorize="hasRole('ADMIN')" href="/mecanicos" class="nav-link btn btn-sm btn-outline-success">
+            <div class="navbar-nav ms-auto gap-2 align-items-center">
+                
+                <a sec:authorize="hasRole('ADMIN')" href="/mecanicos" class="btn btn-sm btn-outline-success d-flex align-items-center gap-1">
                     <i class="bi bi-person-badge-fill"></i> Gestionar Mecánicos
                 </a>
-                <a sec:authorize="hasRole('ADMIN')" href="/clientes" class="nav-link btn btn-sm btn-outline-info">
+                
+                <a sec:authorize="hasRole('ADMIN')" href="/clientes" class="btn btn-sm btn-outline-info d-flex align-items-center gap-1">
                     <i class="bi bi-person-lines-fill"></i> Gestionar Clientes
                 </a>
-                <a sec:authorize="hasRole('ADMIN')" href="/usuarios" class="nav-link btn btn-sm btn-outline-warning">
+                
+                <a sec:authorize="hasRole('ADMIN')" href="/usuarios" class="btn btn-sm btn-outline-warning d-flex align-items-center gap-1">
                     <i class="bi bi-people-fill"></i> Gestionar Usuarios
                 </a>
-                <button type="button" class="nav-link btn btn-sm btn-outline-light" data-bs-toggle="modal" data-bs-target="#modalPassword">
+                
+                <button type="button" class="btn btn-sm btn-outline-light d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#modalPassword">
                     <i class="bi bi-shield-lock-fill text-warning"></i> Mi Clave
                 </button>
+                
                 <form th:action="@{/logout}" method="post" class="m-0">
-                    <button type="submit" class="nav-link btn btn-sm btn-outline-danger">
+                    <button type="submit" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1">
                         <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
                     </button>
                 </form>
