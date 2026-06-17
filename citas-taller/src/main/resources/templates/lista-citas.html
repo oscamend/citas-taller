@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Citas</title>
+    <title>Gestión de Citas - Taller Mecánico</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        /* CSS para que la tabla se comporte mejor en móvil */
+        /* CSS para convertir la tabla en tarjetas en móviles */
         @media (max-width: 768px) {
             .table thead { display: none; }
             .table, .table tbody, .table tr, .table td { display: block; width: 100%; }
@@ -19,30 +19,42 @@
 </head>
 <body class="bg-light">
 
-<div class="container-fluid px-2 px-md-4">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4">
+    <div class="container-fluid px-3">
+        <a class="navbar-brand fw-bold fs-4" href="/citas">
+            <i class="bi bi-wrench-adjustable-circle-fill text-warning me-1"></i> Taller
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto gap-2">
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a href="/mecanicos" class="nav-link btn btn-outline-success btn-sm text-white">Mecánicos</a></li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a href="/clientes" class="nav-link btn btn-outline-info btn-sm text-white">Clientes</a></li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a href="/usuarios" class="nav-link btn btn-outline-warning btn-sm text-white">Usuarios</a></li>
+                <li class="nav-item">
+                    <button type="button" class="nav-link btn btn-outline-light btn-sm w-100" data-bs-toggle="modal" data-bs-target="#modalPassword">Mi Clave</button>
+                </li>
+                <li class="nav-item">
+                    <form th:action="@{/logout}" method="post"><button type="submit" class="nav-link btn btn-outline-danger btn-sm w-100">Salir</button></form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid px-3">
+    <div th:if="${error}" class="alert alert-danger shadow-sm fw-bold" th:text="${error}"></div>
+    <div th:if="${exito}" class="alert alert-success shadow-sm fw-bold" th:text="${exito}"></div>
+
     <div class="card shadow-sm p-3 mb-4 bg-white border-0">
         <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3">
-            <h4 class="fw-bold m-0"><i class="bi bi-calendar-plus-fill text-warning me-2"></i>Citas</h4>
+            <h4 class="fw-bold m-0"><i class="bi bi-calendar-plus-fill text-warning me-2"></i>Historial de Citas</h4>
             <a th:href="@{/citas/nuevo-cliente}" class="btn btn-dark w-100 w-sm-auto fw-bold">
                 <i class="bi bi-plus-circle-fill text-warning me-2"></i>Nueva Cita
             </a>
         </div>
     </div>
-
-    <form th:action="@{/citas}" method="get" class="row g-2 mb-4 bg-white p-3 rounded shadow-sm">
-        <div class="col-12 col-md-3">
-            <input type="text" name="dni" th:value="${paramDni}" class="form-control form-control-sm" placeholder="DNI...">
-        </div>
-        <div class="col-12 col-md-3">
-            <input type="text" name="matricula" th:value="${paramMatricula}" class="form-control form-control-sm" placeholder="Matrícula...">
-        </div>
-        <div class="col-12 col-md-3">
-            <button type="submit" class="btn btn-sm btn-primary w-100 fw-bold">Filtrar</button>
-        </div>
-        <div class="col-12 col-md-3">
-            <a href="/citas" class="btn btn-sm btn-outline-secondary w-100">Limpiar</a>
-        </div>
-    </form>
 
     <div class="table-responsive">
         <table class="table table-hover align-middle">
@@ -56,7 +68,7 @@
             </thead>
             <tbody>
                 <tr th:each="cita : ${citas}">
-                    <td data-label="Cliente" th:text="${cita.cliente != null} ? ${cita.cliente.nombre} : 'N/A'"></td>
+                    <td data-label="Cliente" th:text="${cita.cliente != null} ? ${cita.cliente.nombre + ' ' + cita.cliente.apellido} : 'Sin Cliente'"></td>
                     <td data-label="Matrícula" th:text="${cita.matricula}"></td>
                     <td data-label="Fecha" th:text="${#temporals.format(cita.fechaHora, 'dd/MM HH:mm')}"></td>
                     <td data-label="Acciones" class="text-end">
@@ -67,6 +79,27 @@
         </table>
     </div>
 </div>
+
+<div class="modal fade" id="modalPassword" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title">Cambiar mi Contraseña</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form th:action="@{/usuarios/cambiar-mi-password}" method="post">
+                <div class="modal-body">
+                    <input type="password" name="passwordActual" class="form-control mb-2" placeholder="Contraseña actual" required>
+                    <input type="password" name="nuevaPassword" class="form-control" placeholder="Nueva contraseña" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Actualizar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
