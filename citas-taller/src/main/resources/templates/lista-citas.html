@@ -33,6 +33,20 @@
     <div th:if="${error}" class="alert alert-danger shadow-sm fw-bold mb-3" th:text="${error}"></div>
     <div th:if="${exito}" class="alert alert-success shadow-sm fw-bold mb-3" th:text="${exito}"></div>
 
+    <div class="card shadow-sm p-4 mb-4 bg-white border-0 text-center text-md-start">
+        <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+            <div>
+                <h4 class="fw-bold mb-1 text-dark">
+                    <i class="bi bi-calendar-plus-fill text-warning me-2"></i>Asistente de Citas
+                </h4>
+                <p class="text-muted small mb-0">Registra una nueva cita organizando los datos del cliente y del vehículo en dos cómodos pasos.</p>
+            </div>
+            <a th:href="@{/citas/nuevo-cliente}" class="btn btn-dark fw-bold shadow-sm px-4 py-2">
+                <i class="bi bi-plus-circle-fill text-warning me-2"></i>Agendar Nueva Cita
+            </a>
+        </div>
+    </div>
+
     <div class="card shadow-sm p-4 bg-white border-0 mb-4">
         <h3 class="mb-4 fw-bold text-dark d-flex align-items-center gap-2"><i class="bi bi-list-task text-primary"></i> Historial de Citas Activas</h3>
         <form th:action="@{/citas}" method="get" class="row g-2 align-items-end mb-3">
@@ -47,7 +61,7 @@
     <div class="table-responsive">
         <table class="table table-hover align-middle bg-white shadow-sm rounded">
             <thead class="table-dark small">
-                <tr><th>ID</th><th>Cliente</th><th>DNI</th><th>Vehículo / Marca</th><th>Matrícula</th><th>Servicio</th><th>Fecha y Hora</th><th>Avería</th><th>Mecánico</th><th sec:authorize="hasRole('ADMIN')">Acciones</th></tr>
+                <tr><th>ID</th><th>Cliente</th><th>DNI</th><th>Vehículo</th><th>Matrícula</th><th>Servicio</th><th>Fecha</th><th>Avería</th><th>Mecánico</th><th sec:authorize="hasRole('ADMIN')">Acciones</th></tr>
             </thead>
             <tbody>
                 <tr th:each="cita : ${citas}">
