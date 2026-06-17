@@ -1,288 +1,82 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Gestión de Cuentas de Usuario - TallerMecánico</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <style>
-        body { background-color: #f1f5f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .main-container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .navbar-custom { background-color: #1e293b; }
-        .input-group-text { background-color: #f8fafc; color: #64748b; }
-        .card-form-new { border: none; background-color: #f8fafc; border-left: 4px solid #10b981; }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
 
-<nav class="navbar navbar-expand-lg navbar-dark navbar-custom mb-4 shadow-sm">
-    <div class="container">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4">
+    <div class="container px-4">
         <a class="navbar-brand fw-bold fs-4 m-0" href="/citas">
             <i class="bi bi-arrow-return-left text-warning me-1"></i> Volver a Citas
         </a>
-        <div class="ms-auto d-flex align-items-center gap-2">
-            <button type="button" class="btn btn-sm btn-outline-warning d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalCambiarMiPassword">
-                <i class="bi bi-shield-lock"></i> Cambiar mi Contraseña
-            </button>
-            <form th:action="@{/logout}" method="post" class="m-0">
-                <button type="submit" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1 fw-medium">
-                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="menuPrincipal">
+            <div class="navbar-nav ms-auto gap-2">
+                <button type="button" class="btn btn-sm btn-outline-warning d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#modalCambiarMiPassword">
+                    <i class="bi bi-shield-lock"></i> Mi Contraseña
                 </button>
-            </form>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button type="submit" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1">
+                        <i class="bi bi-box-arrow-right"></i> Salir
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </nav>
 
 <div class="container">
-    <div class="main-container">
+    <div th:if="${exitoUsuario}" class="alert alert-success shadow-sm mb-3" th:text="${exitoUsuario}"></div>
+    <div th:if="${errorUsuario}" class="alert alert-danger shadow-sm mb-3" th:text="${errorUsuario}"></div>
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="m-0 fw-bold text-dark d-flex align-items-center gap-2">
-                <i class="bi bi-shield-lock text-primary"></i> Gestión de Cuentas de Acceso
-            </h4>
-        </div>
+    <div class="card shadow-sm p-4 bg-white border-0 mb-4">
+        <h4 class="fw-bold text-dark mb-4 d-flex align-items-center gap-2">
+            <i class="bi bi-shield-lock text-primary"></i> Gestión de Cuentas de Acceso
+        </h4>
 
-        <div th:if="${exitoUsuario}" class="alert alert-success alert-dismissible fade show shadow-sm small" role="alert">
-            <i class="bi bi-check-circle-fill me-1"></i> <span th:text="${exitoUsuario}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        <div th:if="${errorUsuario}" class="alert alert-danger alert-dismissible fade show shadow-sm small" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-1"></i> <span th:text="${errorUsuario}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-
-        <div sec:authorize="hasRole('ROLE_ADMIN')" class="card mb-4 shadow-sm card-form-new">
-            <div class="card-body p-4">
-                <h6 class="fw-bold mb-3 d-flex align-items-center gap-2" style="color: #10b981;">
-                    <i class="bi bi-person-plus-fill"></i>
-                    <span>Registrar Nuevo Usuario del Sistema</span>
-                </h6>
-
-                <form th:action="@{/usuarios/guardar}" method="post" class="row g-3 align-items-end">
-                    <div class="col-md-3">
-                        <label class="form-label small fw-semibold text-secondary mb-1">Nombre de Usuario</label>
-                        <div class="input-group input-group-sm">
-                            <span class="input-group-text"><i class="bi bi-person"></i></span>
-                            <input type="text" name="username" class="form-control" placeholder="Ej: mendoza_tech" required>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label small fw-semibold text-secondary mb-1">Contraseña</label>
-                        <div class="input-group input-group-sm">
-                            <span class="input-group-text"><i class="bi bi-key"></i></span>
-                            <input type="password" name="password" class="form-control" placeholder="••••••••" required>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label small fw-semibold text-secondary mb-1">Rol / Permisos</label>
-                        <div class="input-group input-group-sm">
-                            <span class="input-group-text"><i class="bi bi-shield-check"></i></span>
-                            <select name="role" class="form-select">
-                                <option value="ROLE_USER">Mecánico (Solo Lectura / Consulta)</option>
-                                <option value="ROLE_ADMIN">Administrador (Control Total)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <button type="submit" class="btn btn-success btn-sm w-100 fw-bold d-flex align-items-center justify-content-center gap-2">
-                            <i class="bi bi-check-circle"></i>
-                            <span>Crear Cuenta</span>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="d-flex align-items-center mb-3 mt-4">
-            <h5 class="m-0 fw-bold text-secondary" style="font-size: 1.1rem;">
-                <i class="bi bi-person-lines-fill text-secondary me-1"></i> Usuarios con Acceso Registrado
-            </h5>
+        <div sec:authorize="hasRole('ROLE_ADMIN')" class="card bg-light border-0 p-3 mb-4">
+            <h6 class="fw-bold mb-3 text-success"><i class="bi bi-person-plus-fill"></i> Registrar Nuevo Usuario</h6>
+            <form th:action="@{/usuarios/guardar}" method="post" class="row g-2 align-items-end">
+                <div class="col-md-3"><label class="small fw-bold text-secondary">Usuario</label><input type="text" name="username" class="form-control form-control-sm" required></div>
+                <div class="col-md-3"><label class="small fw-bold text-secondary">Contraseña</label><input type="password" name="password" class="form-control form-control-sm" required></div>
+                <div class="col-md-3"><label class="small fw-bold text-secondary">Rol</label><select name="role" class="form-select form-select-sm"><option value="ROLE_USER">Mecánico</option><option value="ROLE_ADMIN">Administrador</option></select></div>
+                <div class="col-md-3"><button type="submit" class="btn btn-sm btn-success w-100 fw-bold">Crear Cuenta</button></div>
+            </form>
         </div>
 
         <div class="table-responsive">
-            <table class="table table-hover align-middle shadow-sm border m-0">
-                <thead class="table-dark text-uppercase fs-7" style="font-size: 0.85rem; letter-spacing: 0.5px;">
-                <tr>
-                    <th style="width: 80px;">ID</th>
-                    <th>Nombre de Usuario</th>
-                    <th>Nivel de Acceso (Rol)</th>
-                    <th class="text-center" style="width: 150px;">Estado</th>
-                    <th class="text-center">ACCIONES</th>
-                </tr>
+            <table class="table table-hover align-middle m-0">
+                <thead class="table-dark small text-uppercase">
+                    <tr><th>ID</th><th>Usuario</th><th>Rol</th><th class="text-center">Estado</th><th class="text-center">Acciones</th></tr>
                 </thead>
-                <tbody>
-                <tr th:each="user : ${usuarios}">
-                    <td class="font-monospace fw-bold text-muted" th:text="${user.id}">1</td>
-                    <td class="fw-semibold text-dark" th:text="${user.username}">admin</td>
-                    <td>
-                        <span th:if="${user.role == 'ROLE_ADMIN'}" class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1.5">
-                            <i class="bi bi-shield-lock-fill me-1"></i> Administrador
-                        </span>
-                        <span th:if="${user.role == 'ROLE_USER'}" class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2.5 py-1.5">
-                            <i class="bi bi-wrench me-1"></i> Mecánico
-                        </span>
-                    </td>
-                    <td class="text-center">
-                        <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 rounded">Activo</span>
-                    </td>
-                    <td class="text-center">
-                        <div th:if="${user.username != #authentication.name}" class="d-inline-flex gap-1">
-
-                            <button sec:authorize="hasRole('ROLE_ADMIN')"
-                                    type="button"
-                                    class="btn btn-sm btn-outline-primary"
-                                    data-bs-toggle="modal"
-                                    th:data-bs-target="'#modalEditar-' + ${user.id}"
-                                    title="Editar Datos de Usuario">
-                                <i class="bi bi-pencil-fill"></i>
-                            </button>
-
-                            <button sec:authorize="hasRole('ROLE_ADMIN')"
-                                    type="button"
-                                    class="btn btn-sm btn-outline-warning"
-                                    data-bs-toggle="modal"
-                                    th:data-bs-target="'#modalReset-' + ${user.id}"
-                                    title="Restablecer Contraseña">
-                                <i class="bi bi-key-fill"></i>
-                            </button>
-
-                            <a sec:authorize="hasRole('ROLE_ADMIN')"
-                               th:href="@{/usuarios/eliminar/{id}(id=${user.id})}"
-                               class="btn btn-sm btn-outline-danger"
-                               onclick="return confirm('¿Estás seguro de que deseas eliminar esta cuenta de acceso?');"
-                               title="Eliminar Usuario">
-                                <i class="bi bi-trash3-fill"></i>
-                            </a>
-
-                            <span sec:authorize="hasRole('ROLE_USER')" class="text-muted small italic">Sin permisos</span>
-                        </div>
-
-                        <div th:if="${user.username == #authentication.name}">
-                            <span class="text-muted small">
-                                <i class="bi bi-lock-fill"></i> Cuenta Actual
-                            </span>
-                        </div>
-                    </td>
-                </tr>
+                <tbody class="table-group-divider small">
+                    <tr th:each="user : ${usuarios}">
+                        <td th:text="${user.id}" class="fw-bold text-secondary"></td>
+                        <td th:text="${user.username}"></td>
+                        <td>
+                            <span th:if="${user.role == 'ROLE_ADMIN'}" class="badge bg-danger">Admin</span>
+                            <span th:if="${user.role == 'ROLE_USER'}" class="badge bg-info">Mecánico</span>
+                        </td>
+                        <td class="text-center"><span class="badge bg-success-subtle text-success">Activo</span></td>
+                        <td class="text-center">
+                            <div th:if="${user.username != #authentication.name}" class="d-flex justify-content-center gap-1">
+                                <button sec:authorize="hasRole('ROLE_ADMIN')" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" th:data-bs-target="'#modalEditar-' + ${user.id}"><i class="bi bi-pencil-fill"></i></button>
+                                <button sec:authorize="hasRole('ROLE_ADMIN')" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" th:data-bs-target="'#modalReset-' + ${user.id}"><i class="bi bi-key-fill"></i></button>
+                                <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/usuarios/eliminar/{id}(id=${user.id})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Seguro?')"><i class="bi bi-trash3-fill"></i></a>
+                            </div>
+                            <span th:if="${user.username == #authentication.name}" class="text-muted small"><i class="bi bi-lock-fill"></i> Cuenta Actual</span>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
-
-        <div th:each="user : ${usuarios}" sec:authorize="hasRole('ROLE_ADMIN')">
-            <div th:if="${user.username != #authentication.name}" class="modal fade" th:id="'modalEditar-' + ${user.id}" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header bg-primary-subtle">
-                            <h5 class="modal-title fw-bold text-dark" style="font-size: 1rem;">
-                                <i class="bi bi-pencil-square text-primary me-1"></i>
-                                Modificar Datos de Acceso
-                            </h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <form th:action="@{/usuarios/actualizar}" method="post">
-                            <div class="modal-body">
-                                <input type="hidden" name="id" th:value="${user.id}">
-
-                                <div class="mb-3">
-                                    <label class="form-label small fw-semibold text-secondary">Nombre de Usuario</label>
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                        <input type="text" name="username" class="form-control" th:value="${user.username}" required>
-                                    </div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label small fw-semibold text-secondary">Rol / Permisos del Sistema</label>
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-text"><i class="bi bi-shield-check"></i></span>
-                                        <select name="role" class="form-select" required>
-                                            <option value="ROLE_USER" th:selected="${user.role == 'ROLE_USER'}">Mecánico (Solo Lectura / Consulta)</option>
-                                            <option value="ROLE_ADMIN" th:selected="${user.role == 'ROLE_ADMIN'}">Administrador (Control Total)</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer p-2">
-                                <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-primary btn-sm fw-bold">Guardar Cambios</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div th:each="user : ${usuarios}" sec:authorize="hasRole('ROLE_ADMIN')">
-            <div th:if="${user.username != #authentication.name}" class="modal fade" th:id="'modalReset-' + ${user.id}" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header bg-warning-subtle">
-                            <h5 class="modal-title fw-bold text-dark" style="font-size: 1rem;">
-                                <i class="bi bi-shield-exclamation text-warning me-1"></i>
-                                Restablecer Contraseña de <span th:text="${user.username}"></span>
-                            </h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <form th:action="@{/usuarios/cambiar-password}" method="post">
-                            <div class="modal-body">
-                                <input type="hidden" name="id" th:value="${user.id}">
-
-                                <p class="small text-secondary mb-3">
-                                    Escribe la nueva contraseña de acceso para este usuario. Recuerda comunicársela tras guardarla.
-                                </p>
-
-                                <div class="mb-3">
-                                    <label class="form-label small fw-semibold text-secondary">Nueva Contraseña</label>
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-text"><i class="bi bi-key"></i></span>
-                                        <input type="password" name="password" class="form-control" placeholder="Ej: Mecanico2026*" required>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer p-2">
-                                <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-warning btn-sm fw-bold">Actualizar Contraseña</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="modalCambiarMiPassword" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header bg-dark text-white">
-                        <h5 class="modal-title fw-bold d-flex align-items-center gap-2" style="font-size: 1rem;">
-                            <i class="bi bi-shield-lock-fill text-warning"></i> Cambiar mi Contraseña
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <form th:action="@{/usuarios/cambiar-mi-password}" method="post">
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label class="form-label small fw-semibold">Contraseña Actual</label>
-                                <input type="password" name="passwordActual" class="form-control" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label small fw-semibold">Nueva Contraseña</label>
-                                <input type="password" name="nuevaPassword" class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary btn-sm">Actualizar Contraseña</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
     </div>
 </div>
 
