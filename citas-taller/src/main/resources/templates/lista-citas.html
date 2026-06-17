@@ -1,217 +1,72 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Citas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* CSS para que la tabla se comporte mejor en móvil */
+        @media (max-width: 768px) {
+            .table thead { display: none; }
+            .table, .table tbody, .table tr, .table td { display: block; width: 100%; }
+            .table tr { margin-bottom: 15px; border: 1px solid #dee2e6; border-radius: 8px; padding: 10px; background: #fff; }
+            .table td { text-align: right; padding-left: 50%; position: relative; border: none; }
+            .table td::before { content: attr(data-label); position: absolute; left: 10px; font-weight: bold; }
+        }
+    </style>
 </head>
 <body class="bg-light">
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4">
-    <div class="container px-4">
-        <a class="navbar-brand fw-bold fs-4 m-0" href="/citas">
-            <i class="bi bi-wrench-adjustable-circle-fill text-warning me-1"></i> Panel de Citas del Taller
-        </a>
-
-        <div class="ms-auto d-flex align-items-center gap-2">
-            <a sec:authorize="hasRole('ADMIN')" href="/mecanicos" class="btn btn-sm btn-outline-success d-flex align-items-center gap-1 fw-medium">
-                <i class="bi bi-person-badge-fill"></i> Gestionar Mecánicos
-            </a>
-
-            <a sec:authorize="hasRole('ADMIN')" href="/clientes" class="btn btn-sm btn-outline-info d-flex align-items-center gap-1 fw-medium">
-                <i class="bi bi-person-lines-fill"></i> Gestionar Clientes
-            </a>
-
-            <a sec:authorize="hasRole('ADMIN')" href="/usuarios" class="btn btn-sm btn-outline-warning d-flex align-items-center gap-1 fw-medium">
-                <i class="bi bi-people-fill"></i> Gestionar Usuarios
-            </a>
-
-            <button type="button" class="btn btn-sm btn-outline-light d-flex align-items-center gap-1 fw-medium" data-bs-toggle="modal" data-bs-target="#modalPassword">
-                <i class="bi bi-shield-lock-fill text-warning"></i> Mi Clave
-            </button>
-
-            <form th:action="@{/logout}" method="post" class="m-0">
-                <button type="submit" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1 fw-medium">
-                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
-                </button>
-            </form>
-        </div>
-    </div>
-</nav>
-
-<div class="container">
-
-    <div th:if="${error}" class="alert alert-danger shadow-sm fw-bold mb-3" th:text="${error}"></div>
-    <div th:if="${errorHorario}" class="alert alert-danger shadow-sm fw-bold mb-3" th:text="${errorHorario}"></div>
-    <div th:if="${exitoUsuario}" class="alert alert-success shadow-sm mb-3" th:text="${exitoUsuario}"></div>
-    <div th:if="${errorUsuario}" class="alert alert-danger shadow-sm mb-3" th:text="${errorUsuario}"></div>
-    <div th:if="${exitoPassword}" class="alert alert-success shadow-sm mb-3" th:text="${exitoPassword}"></div>
-    <div th:if="${errorPassword}" class="alert alert-danger shadow-sm mb-3" th:text="${errorPassword}"></div>
-    <div th:if="${exito}" class="alert alert-success shadow-sm fw-bold mb-3" th:text="${exito}"></div>
-
-    <div class="card shadow-sm p-4 mb-4 bg-white border-0 text-center text-md-start">
-        <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
-            <div>
-                <h4 class="fw-bold mb-1 text-dark">
-                    <i class="bi bi-calendar-plus-fill text-warning me-2"></i>Asistente de Citas
-                </h4>
-                <p class="text-muted small mb-0">Registra una nueva cita organizando los datos del cliente y del vehículo en dos cómodos pasos.</p>
-            </div>
-            <a th:href="@{/citas/nuevo-cliente}" class="btn btn-dark fw-bold shadow-sm px-4 py-2">
-                <i class="bi bi-plus-circle-fill text-warning me-2"></i>Agendar Nueva Cita
+<div class="container-fluid px-2 px-md-4">
+    <div class="card shadow-sm p-3 mb-4 bg-white border-0">
+        <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3">
+            <h4 class="fw-bold m-0"><i class="bi bi-calendar-plus-fill text-warning me-2"></i>Citas</h4>
+            <a th:href="@{/citas/nuevo-cliente}" class="btn btn-dark w-100 w-sm-auto fw-bold">
+                <i class="bi bi-plus-circle-fill text-warning me-2"></i>Nueva Cita
             </a>
         </div>
     </div>
 
-    <div class="card shadow-sm p-4 bg-white border-0 mb-5">
-        <h3 class="mb-4 fw-bold text-dark d-flex align-items-center gap-2">
-            <i class="bi bi-list-task text-primary"></i> Historial de Citas Activas
-        </h3>
-
-        <form th:action="@{/citas}" method="get" class="row g-2 mb-4 p-3 bg-light rounded-3 align-items-end border">
-            <input type="hidden" name="ordenarFecha" th:value="${paramOrdenarFecha}">
-
-            <div class="col-md-3">
-                <label class="form-label small fw-bold text-secondary mb-1">
-                    <i class="bi bi-card-text me-1"></i> Buscar por DNI
-                </label>
-                <input type="text" name="dni" th:value="${paramDni}" class="form-control form-control-sm" placeholder="Ej: 12345678X">
-            </div>
-            <div class="col-md-3">
-                <label class="form-label small fw-bold text-secondary mb-1">
-                    <i class="bi bi-car-front me-1"></i> Buscar por Matrícula
-                </label>
-                <input type="text" name="matricula" th:value="${paramMatricula}" class="form-control form-control-sm" placeholder="Ej: 1234BBB">
-            </div>
-
-            <div class="col-md-3">
-                <label class="form-label small fw-bold text-secondary mb-1">
-                    <i class="bi bi-person-badge me-1"></i> Filtrar por Mecánico
-                </label>
-                <select name="mecanicoId" class="form-select form-select-sm">
-                    <option value="">-- Todos los mecánicos --</option>
-                    <option th:each="mec : ${mecanicos}"
-                            th:value="${mec.id}"
-                            th:text="${mec.nombre + ' ' + mec.apellido}"
-                            th:selected="${mec.id == paramMecanicoId}">
-                    </option>
-                </select>
-            </div>
-
-            <div class="col-md-3 d-flex gap-2">
-                <button type="submit" class="btn btn-sm btn-primary w-100 fw-bold shadow-sm">
-                    <i class="bi bi-search me-1"></i> Filtrar Citas
-                </button>
-                <a href="/citas" class="btn btn-sm btn-outline-secondary px-3 shadow-sm" title="Limpiar Todos los Filtros">
-                    <i class="bi bi-arrow-counterclockwise"></i>
-                </a>
-            </div>
-        </form>
-
-        <div class="d-flex justify-content-start align-items-center gap-2 mb-3 px-1">
-            <span class="small fw-bold text-secondary"><i class="bi bi-sort-down me-1"></i>Ordenar por Fecha:</span>
-
-            <a th:href="@{/citas(dni=${paramDni}, matricula=${paramMatricula}, mecanicoId=${paramMecanicoId}, ordenarFecha='asc')}"
-               th:classappend="${paramOrdenarFecha == 'asc'} ? 'btn-primary' : 'btn-outline-primary'"
-               class="btn btn-xs btn-sm py-1 px-2.5 fw-medium rounded-pill shadow-xs">
-                <i class="bi bi-calendar-range me-1"></i> Fecha Ascendente (Menor a Mayor)
-            </a>
-
-            <a th:if="${paramOrdenarFecha == 'asc'}"
-               th:href="@{/citas(dni=${paramDni}, matricula=${paramMatricula}, mecanicoId=${paramMecanicoId})}"
-               class="btn btn-xs btn-sm btn-outline-danger py-1 px-2 fw-medium rounded-pill">
-                <i class="bi bi-x-circle me-1"></i> Quitar Ordenación
-            </a>
+    <form th:action="@{/citas}" method="get" class="row g-2 mb-4 bg-white p-3 rounded shadow-sm">
+        <div class="col-12 col-md-3">
+            <input type="text" name="dni" th:value="${paramDni}" class="form-control form-control-sm" placeholder="DNI...">
         </div>
+        <div class="col-12 col-md-3">
+            <input type="text" name="matricula" th:value="${paramMatricula}" class="form-control form-control-sm" placeholder="Matrícula...">
+        </div>
+        <div class="col-12 col-md-3">
+            <button type="submit" class="btn btn-sm btn-primary w-100 fw-bold">Filtrar</button>
+        </div>
+        <div class="col-12 col-md-3">
+            <a href="/citas" class="btn btn-sm btn-outline-secondary w-100">Limpiar</a>
+        </div>
+    </form>
 
-        <div class="table-responsive">
-            <table class="table table-hover align-middle rounded-3 overflow-hidden">
-                <thead class="table-dark small">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
                 <tr>
-                    <th>ID</th>
                     <th>Cliente</th>
-                    <th>DNI</th>
-                    <th>Vehículo / Marca</th>
                     <th>Matrícula</th>
-                    <th>Servicio</th>
-                    <th>Fecha y Hora</th>
-                    <th>Descripción Avería</th>
-                    <th>Mecánico Asignado</th>
-                    <th sec:authorize="hasRole('ADMIN')" class="text-center">Acciones</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
                 </tr>
-                </thead>
-                <tbody class="table-group-divider small">
+            </thead>
+            <tbody>
                 <tr th:each="cita : ${citas}">
-                    <td th:text="${cita.id}" class="fw-bold text-secondary">1</td>
-                    <td th:text="${cita.cliente != null} ? ${cita.cliente.nombre + ' ' + cita.cliente.apellido} : 'Sin Cliente'">Juan</td>
-                    <td th:text="${cita.cliente != null} ? ${cita.cliente.dni} : '-'">12345678X</td>
-                    <td th:text="${cita.marca}">Seat Ibiza</td>
-                    <td><span class="badge bg-secondary fs-6" th:text="${cita.matricula}">1234BBB</span></td>
-                    <td th:text="${cita.tipoService}">Revisión</td>
-                    <td th:text="${#temporals.format(cita.fechaHora, 'dd/MM/yyyy HH:mm')}">22/05/2026</td>
-                    <td th:text="${cita.descripcionAveria}">Avería</td>
-                    <td>
-                        <span th:if="${cita.mecanico != null}" class="fw-semibold text-dark">
-                            <i class="bi bi-person-badge text-secondary me-1"></i>
-                            <span th:text="${cita.mecanico.nombre + ' ' + cita.mecanico.apellido}">Juan Pérez</span>
-                        </span>
-                        <span th:if="${cita.mecanico == null}" class="text-muted font-italic small">
-                            <i class="bi bi-exclamation-circle text-warning me-1"></i> Sin asignar
-                        </span>
-                    </td>
-                    <td sec:authorize="hasRole('ADMIN')" class="text-center">
-                        <div class="d-flex justify-content-center gap-2">
-                            <a th:href="@{/citas/editar/{id}(id=${cita.id})}" class="btn btn-sm btn-outline-primary py-0 px-2" title="Editar Cita">
-                                <i class="bi bi-pencil-square"></i>
-                            </a>
-
-                            <a th:href="@{/citas/eliminar/{id}(id=${cita.id})}" class="btn btn-sm btn-outline-danger py-0 px-2"
-                               onclick="return confirm('¿Estás seguro de que deseas eliminar esta cita?')" title="Eliminar Cita">
-                                <i class="bi bi-trash3-fill"></i>
-                            </a>
-                        </div>
+                    <td data-label="Cliente" th:text="${cita.cliente != null} ? ${cita.cliente.nombre} : 'N/A'"></td>
+                    <td data-label="Matrícula" th:text="${cita.matricula}"></td>
+                    <td data-label="Fecha" th:text="${#temporals.format(cita.fechaHora, 'dd/MM HH:mm')}"></td>
+                    <td data-label="Acciones" class="text-end">
+                        <a th:href="@{/citas/editar/{id}(id=${cita.id})}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
                     </td>
                 </tr>
-                <tr th:if="${#lists.isEmpty(citas)}">
-                    <td colspan="10" class="text-center py-4 text-muted font-italic">
-                        <i class="bi bi-info-circle me-1"></i> No hay ninguna cita programada o que coincida con los filtros.
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+            </tbody>
+        </table>
     </div>
 </div>
-
-<div class="modal fade" id="modalPassword" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-dark border-0 shadow">
-            <div class="modal-header bg-dark text-white">
-                <h5 class="modal-title fw-bold"><i class="bi bi-shield-lock-fill text-warning me-2"></i>Cambiar mi Contraseña</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-toggle="modal" aria-label="Close"></button>
-            </div>
-            <form th:action="@{/usuarios/cambiar-mi-password}" method="post">
-                <div class="modal-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label small fw-semibold text-secondary">Contraseña Actual</label>
-                        <input type="password" name="passwordActual" class="form-control" required placeholder="Introduce tu contraseña actual">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-semibold text-secondary">Nueva Contraseña</label>
-                        <input type="password" name="nuevaPassword" class="form-control" required placeholder="Mínimo 4 caracteres">
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary btn-sm px-3">Actualizar Contraseña</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
