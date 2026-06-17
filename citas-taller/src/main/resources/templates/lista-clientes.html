@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Clientes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
@@ -13,137 +14,91 @@
         <a class="navbar-brand fw-bold fs-4 m-0" href="/citas">
             <i class="bi bi-arrow-return-left text-warning me-1"></i> Volver a Citas
         </a>
-
-        <form th:action="@{/logout}" method="post" class="m-0">
-            <button type="submit" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1 fw-medium">
-                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
-            </button>
-        </form>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="menuPrincipal">
+            <div class="navbar-nav ms-auto">
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button type="submit" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1 fw-medium">
+                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 </nav>
 
 <div class="container">
-
-    <div class="card shadow-sm p-4 bg-white border-0">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="card shadow-sm p-4 bg-white border-0 mb-4">
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mb-4 gap-3">
             <h3 class="fw-bold text-dark d-flex align-items-center gap-2 m-0">
-                <i class="bi bi-people-fill text-info"></i> Base de Datos de Clientes Registrados
+                <i class="bi bi-people-fill text-info"></i> Base de Datos de Clientes
             </h3>
-            <button type="button" class="btn btn-primary fw-bold shadow-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalCliente">
+            <button type="button" class="btn btn-primary fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalCliente">
                 <i class="bi bi-person-plus-fill"></i> Agregar Cliente
             </button>
         </div>
 
-        <form th:action="@{/clientes}" method="get" class="row g-3 mb-4 align-items-end">
+        <form th:action="@{/clientes}" method="get" class="row g-3 align-items-end">
             <div class="col-md-4">
-                <label for="dni" class="form-label small fw-bold text-secondary">Buscar por DNI / NIE</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white"><i class="bi bi-card-text text-muted"></i></span>
-                    <input type="text" class="form-control border-start-0 ps-0" id="dni" name="dni"
-                           th:value="${paramDni}" placeholder="Ej: 12345678X">
-                </div>
+                <label class="form-label small fw-bold text-secondary">DNI / NIE</label>
+                <input type="text" name="dni" th:value="${paramDni}" class="form-control" placeholder="Ej: 12345678X">
             </div>
             <div class="col-md-4">
-                <label for="telefono" class="form-label small fw-bold text-secondary">Buscar por Teléfono</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white"><i class="bi bi-telephone text-muted"></i></span>
-                    <input type="text" class="form-control border-start-0 ps-0" id="telefono" name="telefono"
-                           th:value="${paramTelefono}" placeholder="Ej: 600000000">
-                </div>
+                <label class="form-label small fw-bold text-secondary">Teléfono</label>
+                <input type="text" name="telefono" th:value="${paramTelefono}" class="form-control" placeholder="Ej: 600000000">
             </div>
             <div class="col-md-4 d-flex gap-2">
-                <button type="submit" class="btn btn-primary flex-grow-1 fw-bold">
-                    <i class="bi bi-search me-1"></i> Buscar
-                </button>
-                <a th:href="@{/clientes}" class="btn btn-outline-secondary" title="Limpiar Filtros">
-                    <i class="bi bi-arrow-clockwise"></i>
-                </a>
+                <button type="submit" class="btn btn-primary flex-grow-1 fw-bold"><i class="bi bi-search"></i> Buscar</button>
+                <a th:href="@{/clientes}" class="btn btn-outline-secondary"><i class="bi bi-arrow-clockwise"></i></a>
             </div>
         </form>
+    </div>
 
-        <div class="table-responsive">
-            <table class="table table-hover align-middle rounded-3 overflow-hidden">
-                <thead class="table-dark small">
+    <div class="table-responsive bg-white shadow-sm rounded">
+        <table class="table table-hover align-middle m-0">
+            <thead class="table-dark small">
                 <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>DNI</th>
-                    <th>Teléfono</th>
+                    <th>ID</th><th>Nombre</th><th>Apellido</th><th>DNI</th><th>Teléfono</th>
                     <th sec:authorize="hasRole('ADMIN')" class="text-center">Acciones</th>
                 </tr>
-                </thead>
-                <tbody class="table-group-divider small">
+            </thead>
+            <tbody>
                 <tr th:each="cliente : ${clientes}">
-                    <td th:text="${cliente.id}" class="fw-bold text-secondary">1</td>
-                    <td th:text="${cliente.nombre}">Nombre</td>
-                    <td th:text="${cliente.apellido}">Apellido</td>
-                    <td><span class="badge bg-light text-dark border font-monospace" th:text="${cliente.dni}">12345678X</span></td>
-                    <td th:text="${cliente.telefono != null ? cliente.telefono : 'No registrado'}">600000000</td>
+                    <td th:text="${cliente.id}" class="fw-bold text-secondary"></td>
+                    <td th:text="${cliente.nombre}"></td>
+                    <td th:text="${cliente.apellido}"></td>
+                    <td><span class="badge bg-light text-dark border font-monospace" th:text="${cliente.dni}"></span></td>
+                    <td th:text="${cliente.telefono != null ? cliente.telefono : 'No registrado'}"></td>
                     <td sec:authorize="hasRole('ADMIN')" class="text-center">
                         <div class="d-flex justify-content-center gap-2">
-                            <a th:href="@{/clientes/editar/{id}(id=${cliente.id})}" class="btn btn-sm btn-outline-primary py-0 px-2" title="Editar Cliente">
-                                <i class="bi bi-pencil-square"></i>
-                            </a>
-                            <a th:href="@{/clientes/eliminar/{id}(id=${cliente.id})}" class="btn btn-sm btn-outline-danger py-0 px-2"
-                               onclick="return confirm('¿Seguro que deseas eliminar este cliente? Se borrarán sus citas asociadas.')" title="Eliminar Cliente">
-                                <i class="bi bi-trash3-fill"></i>
-                            </a>
+                            <a th:href="@{/clientes/editar/{id}(id=${cliente.id})}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil-square"></i></a>
+                            <a th:href="@{/clientes/eliminar/{id}(id=${cliente.id})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Seguro?')"><i class="bi bi-trash3-fill"></i></a>
                         </div>
                     </td>
                 </tr>
-                <tr th:if="${#lists.isEmpty(clientes)}">
-                    <td colspan="6" class="text-center py-4 text-muted">
-                        <i class="bi bi-info-circle me-1"></i> No hay clientes registrados en el sistema.
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+            </tbody>
+        </table>
     </div>
 </div>
 
-<!-- MODAL CREAR CLIENTE -->
-<div class="modal fade" id="modalCliente" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="modalCliente" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
+        <div class="modal-content">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title fw-bold"><i class="bi bi-person-badge-fill me-2"></i>Nuevo Cliente</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title fw-bold">Nuevo Cliente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-
-            <!-- Le añadimos un ID al formulario para manejarlo desde JS -->
-            <form id="formModalCliente" th:action="@{/clientes/guardar}" th:object="${cliente}" method="post">
-                <div class="modal-body p-4">
-
-                    <!-- Contenedor de error general para el modal -->
-                    <div id="alertModalError" class="alert alert-danger d-none align-items-center gap-2 small mb-3" role="alert">
-                        <i class="bi bi-exclamation-triangle-fill"></i>
-                        <span id="textModalError"></span>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold small text-secondary">Nombre</label>
-                        <input type="text" th:field="*{nombre}" class="form-control" placeholder="Ej: Pepe" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold small text-secondary">Apellido</label>
-                        <input type="text" th:field="*{apellido}" class="form-control" placeholder="Ej: González" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold small text-secondary">DNI / NIE</label>
-                        <input type="text" id="modalDni" th:field="*{dni}" class="form-control" placeholder="Ej: 12345678X" required>
-                        <div id="errorDniReal" class="text-danger small mt-1 d-none">Este DNI ya pertenece a un cliente registrado.</div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold small text-secondary">Teléfono</label>
-                        <input type="text" id="modalTelefono" th:field="*{telefono}" class="form-control" placeholder="Ej: 600000000">
-                        <div id="errorTelefonoReal" class="text-danger small mt-1 d-none">Este número de teléfono ya está asociado a otro cliente.</div>
-                    </div>
+            <form th:action="@{/clientes/guardar}" th:object="${cliente}" method="post">
+                <div class="modal-body">
+                    <input type="text" th:field="*{nombre}" class="form-control mb-3" placeholder="Nombre" required>
+                    <input type="text" th:field="*{apellido}" class="form-control mb-3" placeholder="Apellido" required>
+                    <input type="text" th:field="*{dni}" class="form-control mb-3" placeholder="DNI" required>
+                    <input type="tel" th:field="*{telefono}" class="form-control" placeholder="Teléfono">
                 </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary px-4">Guardar Cliente</button>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Guardar Cliente</button>
                 </div>
             </form>
         </div>
@@ -151,59 +106,5 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- JAVASCRIPT PARA VALIDACIÓN EN TIEMPO REAL SIN CERRAR EL MODAL -->
-<script>
-    document.getElementById('formModalCliente').addEventListener('submit', function(event) {
-        // Frenamos provisionalmente el envío del formulario
-        event.preventDefault();
-
-        const formulario = this;
-        const dniInput = document.getElementById('modalDni').value;
-        const telefonoInput = document.getElementById('modalTelefono').value;
-
-        const alertError = document.getElementById('alertModalError');
-        const textError = document.getElementById('textModalError');
-        const errorDni = document.getElementById('errorDniReal');
-        const errorTelefono = document.getElementById('errorTelefonoReal');
-
-        // Reseteamos estados visuales de errores previos
-        alertError.classList.add('d-none');
-        errorDni.classList.add('d-none');
-        errorTelefono.classList.add('d-none');
-
-        // Consultamos al backend por AJAX de forma asíncrona
-        fetch(`/api/clientes/validar-duplicados?dni=${encodeURIComponent(dniInput)}&telefono=${encodeURIComponent(telefonoInput)}`)
-            .then(response => response.json())
-            .then(data => {
-                let tieneErrores = false;
-
-                if (data.dniDuplicado) {
-                    errorDni.classList.remove('d-none');
-                    textError.innerText = "No se puede guardar: Existen campos duplicados.";
-                    alertError.classList.remove('d-none');
-                    tieneErrores = true;
-                }
-
-                if (data.telefonoDuplicado) {
-                    errorTelefono.classList.remove('d-none');
-                    textError.innerText = "No se puede guardar: Existen campos duplicados.";
-                    alertError.classList.remove('d-none');
-                    tieneErrores = true;
-                }
-
-                // Si no hay duplicados, enviamos el formulario de verdad
-                if (!tieneErrores) {
-                    formulario.submit();
-                }
-            })
-            .catch(err => {
-                console.error("Error al validar datos:", err);
-                // Si el servicio falla por lo que sea, dejamos pasar el envío por seguridad
-                formulario.submit();
-            });
-    });
-</script>
-
 </body>
 </html>
