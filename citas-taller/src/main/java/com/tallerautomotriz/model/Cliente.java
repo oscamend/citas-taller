@@ -7,7 +7,7 @@ import java.util.List;
 @Table(name = "clientes")
 public class Cliente {
 
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "cliente")
     private List<Cita> citas;
 
     @Id
