@@ -6,6 +6,7 @@ import com.tallerautomotriz.repository.CitaRepository;
 import com.tallerautomotriz.repository.ClienteRepository;
 import com.tallerautomotriz.repository.MecanicoRepository;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -246,12 +247,21 @@ public class CitaController {
     // ACCIÓN: Eliminar Cliente por ID
     // =========================================================================
     @PostMapping("/clientes/eliminar/{id}")
-    public String eliminarCliente(@PathVariable Long id) {
+public String eliminarCliente(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    try {
         if (clienteRepository.existsById(id)) {
             clienteRepository.deleteById(id);
+            clienteRepository.flush();
         }
-        return "redirect:/clientes";
+    } catch (DataIntegrityViolationException e) {
+        redirectAttributes.addFlashAttribute(
+                "errorEliminacion",
+                "No se puede eliminar este cliente porque tiene citas asociadas."
+        );
     }
+
+    return "redirect:/clientes";
+}
 
     // =========================================================================
     // ACCIÓN (GET): Mostrar el formulario de edición con los datos del cliente
