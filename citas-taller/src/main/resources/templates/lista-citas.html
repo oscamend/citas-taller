@@ -75,8 +75,17 @@
                     <td th:text="${cita.descripcionAveria}"></td>
                     <td th:text="${cita.mecanico != null} ? ${cita.mecanico.nombre} : 'Sin asignar'"></td>
                     <td sec:authorize="hasRole('ADMIN')">
-                        <div class="d-flex gap-1"><a th:href="@{/citas/editar/{id}(id=${cita.id})}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil-square"></i></a><a th:href="@{/citas/eliminar/{id}(id=${cita.id})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Seguro?')"><i class="bi bi-trash3-fill"></i></a></div>
-                    </td>
+                        <div class="d-flex gap-1">
+    <a th:href="@{/citas/editar/{id}(id=${cita.id})}" class="btn btn-sm btn-outline-primary">
+        <i class="bi bi-pencil-square"></i>
+    </a>
+
+    <form th:action="@{/citas/eliminar/{id}(id=${cita.id})}" method="post" class="d-inline" onsubmit="return confirm('¿Seguro que quieres eliminar esta cita?')">
+        <button type="submit" class="btn btn-sm btn-outline-danger">
+            <i class="bi bi-trash3-fill"></i>
+        </button>
+    </form>
+</div>                    </td>
                 </tr>
             </tbody>
         </table>

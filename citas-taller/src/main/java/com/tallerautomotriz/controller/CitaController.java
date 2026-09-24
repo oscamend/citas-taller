@@ -234,7 +234,7 @@ public class CitaController {
     // =========================================================================
     // ACCIÓN: Eliminar Cita por ID
     // =========================================================================
-    @GetMapping("/citas/eliminar/{id}")
+    @PostMapping("/citas/eliminar/{id}")
     public String eliminarCita(@PathVariable Long id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);
@@ -245,7 +245,7 @@ public class CitaController {
     // =========================================================================
     // ACCIÓN: Eliminar Cliente por ID
     // =========================================================================
-    @GetMapping("/clientes/eliminar/{id}")
+    @PostMapping("/clientes/eliminar/{id}")
     public String eliminarCliente(@PathVariable Long id) {
         if (clienteRepository.existsById(id)) {
             clienteRepository.deleteById(id);
