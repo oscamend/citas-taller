@@ -53,7 +53,7 @@ public class SecurityConfig {
 
                         // 3. Gestión de mecánicos y usuarios: SOLO ADMINISTRADOR
                         // (Nota: el orden importa, esta línea va después de la específica de arriba)
-                        .requestMatchers("/mecanicos/**", "/usuarios/**").hasRole("ADMIN")
+                        .requestMatchers("/mecanicos/**", "/usuarios/**", "/clientes/**").hasRole("ADMIN")
 
                         // 4. Modificaciones críticas de citas: SOLO ADMINISTRADOR
                         .requestMatchers("/citas/editar/**", "/citas/eliminar/**").hasRole("ADMIN")
