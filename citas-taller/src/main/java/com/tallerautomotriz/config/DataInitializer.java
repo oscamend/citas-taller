@@ -21,13 +21,20 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         // Genera el usuario administrador maestro inicial si la tabla está limpia
         if (usuarioRepository.findByUsername("admin").isEmpty()) {
-            Usuario admin = new Usuario();
-            admin.setUsername("admin");
-            admin.setPassword(passwordEncoder.encode(System.getenv("ADMIN_PASSWORD")));
-            admin.setRole("ROLE_ADMIN");
+    Usuario admin = new Usuario();
+    admin.setUsername("admin");
 
-            usuarioRepository.save(admin);
-            System.out.println("============== ¡ADMINISTRADOR INICIAL CREADO CON ÉXITO! ==============");
-        }
+    String adminPassword = System.getenv("ADMIN_PASSWORD");
+
+    if (adminPassword == null || adminPassword.isBlank()) {
+        throw new IllegalStateException("La variable de entorno ADMIN_PASSWORD no está configurada.");
+    }
+
+    admin.setPassword(passwordEncoder.encode(adminPassword));
+    admin.setRole("ROLE_ADMIN");
+
+    usuarioRepository.save(admin);
+    System.out.println("============== ¡ADMINISTRADOR INICIAL CREADO CON ÉXITO! ==============");
+}
     }
 }

@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import jakarta.validation.Valid;
+import org.springframework.validation.BindingResult;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -394,8 +396,18 @@ public String eliminarCliente(@PathVariable Long id, RedirectAttributes redirect
     // ACCIÓN (POST): Guardar un nuevo cliente desde el modal
     // =========================================================================
     @PostMapping("/clientes/guardar")
-    public String guardarNuevoClienteFromModal(@ModelAttribute("cliente") Cliente nuevoCliente, RedirectAttributes redirectAttributes) {
+    public String guardarNuevoClienteFromModal(
+        @Valid @ModelAttribute("cliente") Cliente nuevoCliente,
+        BindingResult bindingResult,
+        RedirectAttributes redirectAttributes,
+        Model model) {
 
+         if (bindingResult.hasErrors()) {
+    List<Cliente> clientes = clienteRepository.filtrarClientes(null, null);
+    model.addAttribute("clientes", clientes);
+    model.addAttribute("abrirModalCliente", true);
+    return "lista-clientes";
+}
         Optional<Cliente> clienteExistenteConDni = clienteRepository.findByDni(nuevoCliente.getDni().trim());
         if (clienteExistenteConDni.isPresent()) {
             redirectAttributes.addFlashAttribute("errorModalDuplicado", "No se pudo crear: El DNI/NIE ya pertenece a un cliente registrado.");
